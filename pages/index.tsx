@@ -2,10 +2,32 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
+import { GetServerSidePropsContext } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export const runtime = "experimental-edge";
+
+export function getServerSideProps(context: GetServerSidePropsContext) {
+  const cookies = context.req.headers.cookie ?? "";
+
+  // Note: it might be worth to do this using a proper cookies parsing utility/package
+  const xCfCountryCookieValue =
+    cookies
+      .split(";")
+      .map((c) => c.trim().split("="))
+      .map(([key, value]) => (key === "x-cf-country" ? value : null))
+      .filter(Boolean)
+      .find(Boolean) ?? "";
+
+  return {
+    props: {
+      country: xCfCountryCookieValue,
+    },
+  };
+}
+
+export default function Home({ country }: { country: string }) {
   return (
     <>
       <Head>
@@ -40,14 +62,7 @@ export default function Home() {
         </div>
 
         <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
+          <h1>The country is: {country}</h1>
         </div>
 
         <div className={styles.grid}>
