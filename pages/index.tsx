@@ -3,31 +3,21 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { GetServerSidePropsContext } from "next";
+import { getCf } from '../getCf';
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const runtime = "experimental-edge";
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
-  const cookies = context.req.headers.cookie ?? "";
-
-  // Note: it might be worth to do this using a proper cookies parsing utility/package
-  const xCfCountryCookieValue =
-    cookies
-      .split(";")
-      .map((c) => c.trim().split("="))
-      .map(([key, value]) => (key === "x-cf-country" ? value : null))
-      .filter(Boolean)
-      .find(Boolean) ?? "";
-
   return {
     props: {
-      country: xCfCountryCookieValue,
+      cf: getCf(context.req.headers.cookie ?? ""),
     },
   };
 }
 
-export default function Home({ country }: { country: string }) {
+export default function Home({ cf }: ReturnType<typeof getServerSideProps>['props']) {
   return (
     <>
       <Head>
@@ -62,7 +52,7 @@ export default function Home({ country }: { country: string }) {
         </div>
 
         <div className={styles.center}>
-          <h1>The country is: {country}</h1>
+         {!!cf && <h1>The country is: {cf?.country}</h1>}
         </div>
 
         <div className={styles.grid}>

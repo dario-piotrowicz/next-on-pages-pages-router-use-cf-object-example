@@ -7,6 +7,6 @@ export const runtime = 'experimental-edge';
 export function middleware(request: NextRequest) {
   const { cf } = getRequestContext();
   const response = NextResponse.next()
-  response.cookies.set('x-cf-country', cf.country ?? '');
+  response.cookies.set('x-cf', JSON.stringify(cf) ?? null);
   return response;
 }
