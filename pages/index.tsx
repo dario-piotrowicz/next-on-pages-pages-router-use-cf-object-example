@@ -12,7 +12,7 @@ export const runtime = "experimental-edge";
 export function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {
-      cf: getCf(context.req.headers.cookie ?? ""),
+      cf: getCf(context.req.headers),
     },
   };
 }

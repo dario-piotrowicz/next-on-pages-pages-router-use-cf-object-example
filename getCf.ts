@@ -1,15 +1,11 @@
-export function getCf(cookies: string): IncomingRequestCfProperties | null {
-  const xCf =
-    // Note: it might be worth to do this using a proper cookies parsing utility/package
-    cookies
-      .split(";")
-      .map((c) => c.trim().split("="))
-      .map(([key, value]) => (key === "x-cf" ? value : null))
-      .filter(Boolean)
-      .find(Boolean) ?? null;
+import type { IncomingHttpHeaders } from "http";
 
-  if (!xCf) return null;
+export function getCf(headers: IncomingHttpHeaders): IncomingRequestCfProperties | null {
+  const cfHeader = headers['x-cf'];
 
-  const decodedXCf = decodeURIComponent(xCf);
-  return JSON.parse(decodedXCf);
+  if (!cfHeader) return null;
+
+  if (Array.isArray(cfHeader)) return JSON.parse(cfHeader[0]);
+
+  return JSON.parse(cfHeader);
 }
